@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Productos</title>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+
+<body>
+  <div>
+    <h2>Catálogo de Productos</h2>
+    <ul>
+      {{#each products}}
+      <li>
+        <h3>{{this.name}}</h3>
+        <p>{{this.description}}</p>
+        <p>Precio: ${{this.price}}</p>
+        <button onclick="addToCart('{{this._id}}')">Añadir al carrito</button>
+      </li>
+      {{/each}}
+    </ul>
+
+    <script>
+      async function addToCart(productId) {
+        try {
+          const response = await fetch(`/api/carts`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId })
+          });
+
+          if (response.ok) {
+            Swal.fire({
+              icon: 'success',
+              title: 'Producto añadido',
+              text: 'El producto se ha añadido al carrito con éxito.',
+              timer: 2000,
+              showConfirmButton: false
+            });
+          } else {
+            Swal.fire({
+              icon: 'error',
+              title: 'Error',
+              text: 'Hubo un problema al añadir el producto al carrito.',
+              showConfirmButton: true
+            });
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error de conexión',
+            text: 'No se pudo conectar con el servidor.',
+            showConfirmButton: true
+          });
+        }
+      }
+    </script>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/index.js"></script>
+  </div>
+</body>
+
+</html>
